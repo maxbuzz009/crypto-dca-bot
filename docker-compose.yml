@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=sqlite:./data/crypto-dca.db
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    networks:
+      - crypto-dca
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:3000
+    depends_on:
+      - backend
+    networks:
+      - crypto-dca
+
+networks:
+  crypto-dca:
+    driver: bridge
+
+volumes:
+  data:
